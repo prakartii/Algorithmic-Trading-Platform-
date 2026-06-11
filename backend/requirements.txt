@@ -1,0 +1,14 @@
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+pydantic==2.7.1
+pydantic-settings==2.2.1
+supabase==2.4.6
+yfinance==0.2.40
+vectorbt==0.26.2
+plotly==5.24.1
+alpaca-py==0.20.0
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.0
+python-dotenv==1.0.1
+httpx==0.27.0

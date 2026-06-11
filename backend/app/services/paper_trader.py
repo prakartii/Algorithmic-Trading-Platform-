@@ -1,0 +1,2 @@
+class PaperTrader:
+    pass

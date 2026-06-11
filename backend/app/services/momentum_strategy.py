@@ -1,0 +1,2 @@
+class MomentumStrategy:
+    pass
