@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 
 from alpaca.common.exceptions import APIError
@@ -8,6 +9,8 @@ from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 # ── domain errors ─────────────────────────────────────────────────────────────
@@ -112,8 +115,10 @@ class AlpacaService:
             raw = self._client.get_all_positions()
         except APIError as exc:
             raise AlpacaOrderError(f"Failed to fetch positions: {exc}") from exc
+        except Exception as exc:
+            raise AlpacaOrderError(f"Failed to fetch positions: {exc}") from exc
 
-        return [self._parse_position(p) for p in raw]
+        return [self._parse_position(p) for p in (raw or [])]
 
     def get_portfolio(self) -> PortfolioSummary:
         """Return account-level portfolio summary including all open positions."""
@@ -135,6 +140,16 @@ class AlpacaService:
             positions=positions,
         )
 
+    def get_order(self, order_id: str) -> dict:
+        """Return the full Alpaca order object for a given order ID."""
+        try:
+            order = self._client.get_order_by_id(order_id)
+        except APIError as exc:
+            raise AlpacaOrderError(f"Failed to fetch order {order_id}: {exc}") from exc
+        except Exception as exc:
+            raise AlpacaOrderError(f"Failed to fetch order {order_id}: {exc}") from exc
+        return _order_to_dict(order)
+
     # ── private ───────────────────────────────────────────────────────────────
 
     def _submit(
@@ -147,13 +162,15 @@ class AlpacaService:
         if quantity <= 0:
             raise AlpacaOrderError("quantity must be positive.")
 
+        tif = TimeInForce.GTC if _is_crypto(symbol) else TimeInForce.DAY
+
         try:
             if limit_price is not None:
                 request = LimitOrderRequest(
                     symbol=symbol.upper(),
                     qty=quantity,
                     side=side,
-                    time_in_force=TimeInForce.DAY,
+                    time_in_force=tif,
                     limit_price=limit_price,
                 )
             else:
@@ -161,7 +178,7 @@ class AlpacaService:
                     symbol=symbol.upper(),
                     qty=quantity,
                     side=side,
-                    time_in_force=TimeInForce.DAY,
+                    time_in_force=tif,
                 )
 
             order = self._client.submit_order(request)
@@ -170,6 +187,20 @@ class AlpacaService:
             raise AlpacaOrderError(
                 f"Alpaca rejected {side.value} {quantity} {symbol}: {exc}"
             ) from exc
+
+        logger.info(
+            "order_submitted order_id=%s symbol=%s asset_class=%s side=%s "
+            "qty=%s order_type=%s tif=%s status=%s filled_qty=%s",
+            order.id,
+            order.symbol,
+            order.asset_class.value if order.asset_class else "unknown",
+            order.side.value if order.side else None,
+            order.qty,
+            order.order_type.value if order.order_type else None,
+            order.time_in_force.value if order.time_in_force else None,
+            order.status.value if order.status else None,
+            order.filled_qty,
+        )
 
         return OrderResult(
             order_id=str(order.id),
@@ -197,7 +228,7 @@ class AlpacaService:
     def _parse_position(p) -> PositionData:
         return PositionData(
             symbol=str(p.symbol),
-            quantity=float(p.qty),
+            quantity=_f(p.qty),
             avg_cost=_f(p.avg_entry_price),
             current_price=_f(p.current_price),
             market_value=_f(p.market_value),
@@ -215,3 +246,31 @@ def _f(val) -> float:
         return round(float(val), 2)
     except (TypeError, ValueError):
         return 0.0
+
+
+def _is_crypto(symbol: str) -> bool:
+    """Crypto pairs on Alpaca are quoted in USD (e.g. BTCUSD, BTC/USD)."""
+    return symbol.upper().replace("/", "").endswith("USD")
+
+
+def _order_to_dict(order) -> dict:
+    """Serialize an Alpaca Order object to a plain dict."""
+    return {
+        "id":               str(order.id),
+        "client_order_id":  str(order.client_order_id),
+        "symbol":           str(order.symbol),
+        "asset_class":      order.asset_class.value if order.asset_class else None,
+        "side":             order.side.value if order.side else None,
+        "qty":              str(order.qty) if order.qty is not None else None,
+        "filled_qty":       str(order.filled_qty) if order.filled_qty is not None else None,
+        "filled_avg_price": str(order.filled_avg_price) if order.filled_avg_price is not None else None,
+        "order_type":       order.order_type.value if order.order_type else None,
+        "time_in_force":    order.time_in_force.value if order.time_in_force else None,
+        "limit_price":      str(order.limit_price) if order.limit_price else None,
+        "status":           order.status.value if order.status else None,
+        "submitted_at":     order.submitted_at.isoformat() if order.submitted_at else None,
+        "filled_at":        order.filled_at.isoformat() if order.filled_at else None,
+        "expired_at":       order.expired_at.isoformat() if order.expired_at else None,
+        "canceled_at":      order.canceled_at.isoformat() if order.canceled_at else None,
+        "extended_hours":   order.extended_hours,
+    }

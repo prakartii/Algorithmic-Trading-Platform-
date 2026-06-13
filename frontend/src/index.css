@@ -1,3 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: #080810;
+    color: #f1f5f9;
+  }
+
+  /* Thin scrollbar for sidebar and content areas */
+  ::-webkit-scrollbar          { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track    { background: transparent; }
+  ::-webkit-scrollbar-thumb    { background: rgba(255,255,255,0.07); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.13); }
+
+  /* Dark date input */
+  input[type="date"]  { color-scheme: dark; }
+  input[type="number"] { -moz-appearance: textfield; }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+}
+
+@layer utilities {
+  .font-tabular { font-variant-numeric: tabular-nums; }
+  .text-balance { text-wrap: balance; }
+
+  /* Gradient border helper */
+  .border-gradient {
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+
+  /* Subtle scanline texture – very faint, adds depth */
+  .scanlines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 1px,
+      rgba(0,0,0,0.025) 1px,
+      rgba(0,0,0,0.025) 2px
+    );
+  }
+}

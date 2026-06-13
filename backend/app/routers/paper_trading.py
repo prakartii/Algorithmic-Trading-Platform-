@@ -130,6 +130,22 @@ def submit_order(req: OrderRequest, svc: AlpacaSvc) -> OrderResponse:
 
 
 @router.get(
+    "/orders/{order_id}",
+    summary="Fetch full Alpaca order by ID",
+)
+def get_order(order_id: str, svc: AlpacaSvc) -> dict:
+    try:
+        return svc.get_order(order_id)
+    except AlpacaOrderError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Failed to fetch order: {exc}",
+        ) from exc
+
+
+@router.get(
     "/positions",
     response_model=list[PositionOut],
     summary="All open paper-trading positions",

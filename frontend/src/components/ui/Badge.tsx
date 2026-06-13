@@ -1,25 +1,24 @@
 import { cn } from "@/utils/cn";
 
 interface BadgeProps {
-  label: string;
-  variant?: "default" | "success" | "warning" | "danger";
+  label:    string;
+  variant?: "default" | "success" | "warning" | "danger" | "blue";
 }
 
-const VARIANTS: Record<NonNullable<BadgeProps["variant"]>, string> = {
-  default: "bg-slate-800 text-slate-300 border-slate-700/50",
-  success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",
-  warning: "bg-amber-500/10  text-amber-400  border-amber-500/25",
-  danger:  "bg-red-500/10    text-red-400    border-red-500/25",
+const V: Record<NonNullable<BadgeProps["variant"]>, string> = {
+  default: "text-slate-400  bg-slate-800/60    border-slate-700/40",
+  success: "text-emerald-400 bg-emerald-500/8  border-emerald-500/20",
+  warning: "text-amber-400  bg-amber-500/8     border-amber-500/20",
+  danger:  "text-red-400    bg-red-500/8       border-red-500/20",
+  blue:    "text-blue-400   bg-blue-500/8      border-blue-500/20",
 };
 
 export default function Badge({ label, variant = "default" }: BadgeProps) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border select-none",
-        VARIANTS[variant],
-      )}
-    >
+    <span className={cn(
+      "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide border select-none",
+      V[variant],
+    )}>
       {label}
     </span>
   );
