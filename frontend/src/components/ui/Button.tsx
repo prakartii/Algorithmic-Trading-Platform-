@@ -8,16 +8,16 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const V: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary:   "bg-blue-600 hover:bg-blue-500 text-white border-transparent shadow-sm",
-  secondary: "bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 border-white/[0.08] hover:border-white/[0.12]",
-  danger:    "bg-red-500/[0.08] hover:bg-red-500/[0.14] text-red-400 border-red-500/20",
-  ghost:     "bg-transparent hover:bg-white/[0.04] text-slate-400 border-transparent",
+  primary:   "bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white border-transparent shadow-sm",
+  secondary: "bg-white/[0.05] hover:bg-white/[0.09] text-slate-300 border-white/[0.08] hover:border-white/[0.14]",
+  danger:    "bg-red-500/[0.10] hover:bg-red-500/[0.16] text-red-400 border-red-500/25",
+  ghost:     "bg-transparent hover:bg-white/[0.05] text-slate-400 hover:text-slate-200 border-transparent",
 };
 
 const S: Record<NonNullable<ButtonProps["size"]>, string> = {
   sm: "px-3 py-1.5 text-[12px] h-7",
   md: "px-3.5 py-2 text-[13px] h-8",
-  lg: "px-4 py-2.5 text-[14px] h-9",
+  lg: "px-4 py-2.5 text-[13px] h-9",
 };
 
 export default function Button({

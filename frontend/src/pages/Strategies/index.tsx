@@ -12,7 +12,7 @@ interface Strategy {
   description: string;
   params:      { label: string; value: string }[];
   available:   boolean;
-  metrics?:    { label: string; value: string }[];
+  metrics?:    { label: string; value: string; color?: string }[];
 }
 
 const STRATEGIES: Strategy[] = [
@@ -30,9 +30,9 @@ const STRATEGIES: Strategy[] = [
       { label: "Order Type",   value: "Market"   },
     ],
     metrics: [
-      { label: "Typical CAGR",   value: "8–14%"  },
-      { label: "Max Drawdown",   value: "−20–35%" },
-      { label: "Win Rate",       value: "~60%"   },
+      { label: "Typical CAGR",   value: "8–14%",  color: "text-emerald-400" },
+      { label: "Max Drawdown",   value: "−20–35%", color: "text-red-400"    },
+      { label: "Win Rate",       value: "~60%",   color: "text-slate-300"  },
     ],
     available: true,
   },
@@ -50,9 +50,9 @@ const STRATEGIES: Strategy[] = [
       { label: "Universe",     value: "S&P 500"   },
     ],
     metrics: [
-      { label: "Typical CAGR",   value: "10–18%"  },
-      { label: "Max Drawdown",   value: "−30–50%" },
-      { label: "Sharpe",         value: "~0.7"    },
+      { label: "Typical CAGR",   value: "10–18%",  color: "text-emerald-400" },
+      { label: "Max Drawdown",   value: "−30–50%", color: "text-red-400"    },
+      { label: "Sharpe",         value: "~0.7",   color: "text-slate-300"  },
     ],
     available: false,
   },
@@ -65,13 +65,12 @@ export default function Strategies() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
-      className="space-y-5"
+      transition={{ duration: 0.18 }}
+      className="space-y-6"
     >
-      {/* Header */}
       <div>
-        <h2 className="text-[15px] font-semibold text-slate-200">Strategy Library</h2>
-        <p className="text-[13px] text-slate-600 mt-1">
+        <h2 className="text-[18px] font-bold text-slate-100">Strategy Library</h2>
+        <p className="text-[13px] text-slate-500 mt-1.5">
           Select a strategy to backtest against historical data.
         </p>
       </div>
@@ -82,16 +81,15 @@ export default function Strategies() {
             key={s.name}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22, delay: i * 0.06, ease: EASE }}
+            transition={{ duration: 0.24, delay: i * 0.07, ease: EASE }}
           >
             <Card className="h-full flex flex-col">
-              <div className="p-5 flex-1">
+              <div className="p-6 flex-1 flex flex-col">
 
-                {/* Header */}
                 <div className="flex items-start justify-between gap-3 mb-4">
                   <div>
-                    <h3 className="text-[15px] font-bold text-slate-100 leading-tight">{s.name}</h3>
-                    <p className="text-[11px] uppercase tracking-[0.14em] text-slate-600 mt-1 font-semibold">
+                    <h3 className="text-[16px] font-bold text-slate-100 leading-tight">{s.name}</h3>
+                    <p className="text-[11px] uppercase tracking-[0.12em] text-slate-600 mt-1 font-medium">
                       {s.tag}
                     </p>
                   </div>
@@ -101,40 +99,41 @@ export default function Strategies() {
                   />
                 </div>
 
-                {/* Description */}
                 <p className="text-[13px] text-slate-400 leading-relaxed mb-5">{s.description}</p>
 
-                {/* Params */}
+                {/* Params grid */}
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   {s.params.map((p) => (
-                    <div key={p.label} className="bg-white/[0.025] border border-[#ffffff07] rounded-lg px-3 py-2.5">
-                      <p className="text-[10px] uppercase tracking-[0.12em] text-slate-700 font-semibold">{p.label}</p>
-                      <p className="text-[13px] font-semibold text-slate-300 mt-0.5 tabular-nums">{p.value}</p>
+                    <div key={p.label} className="bg-white/[0.02] border border-white/[0.07] rounded-lg px-3 py-2.5">
+                      <p className="text-[10px] uppercase tracking-[0.10em] text-slate-600 font-medium leading-none mb-1.5">{p.label}</p>
+                      <p className="text-[13px] font-semibold text-slate-300 tabular-nums leading-none">{p.value}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* Historical metrics */}
                 {s.metrics && (
-                  <div className="border border-[#ffffff06] rounded-lg divide-y divide-[#ffffff05] mb-5">
-                    {s.metrics.map((m) => (
-                      <div key={m.label} className="flex items-center justify-between px-3.5 py-2">
-                        <span className="text-[11px] text-slate-600">{m.label}</span>
-                        <span className="text-[12px] font-semibold text-slate-400 tabular-nums">{m.value}</span>
+                  <div className="border border-white/[0.06] rounded-lg mb-5 overflow-hidden">
+                    {s.metrics.map((m, idx) => (
+                      <div key={m.label} className={`flex items-center justify-between px-3.5 py-2.5 ${idx < s.metrics!.length - 1 ? "border-b border-white/[0.05]" : ""}`}>
+                        <span className="text-[12px] text-slate-500">{m.label}</span>
+                        <span className={`text-[12px] font-semibold tabular-nums ${m.color ?? "text-slate-400"}`}>{m.value}</span>
                       </div>
                     ))}
                   </div>
                 )}
 
-                <Button
-                  variant={s.available ? "primary" : "secondary"}
-                  size="sm"
-                  disabled={!s.available}
-                  onClick={() => s.available && navigate("/backtests")}
-                  className="w-full"
-                >
-                  {s.available ? "Run Backtest →" : "Not yet available"}
-                </Button>
+                <div className="mt-auto">
+                  <Button
+                    variant={s.available ? "primary" : "secondary"}
+                    size="sm"
+                    disabled={!s.available}
+                    onClick={() => s.available && navigate("/backtests")}
+                    className="w-full"
+                  >
+                    {s.available ? "Backtest this strategy →" : "Not yet available"}
+                  </Button>
+                </div>
               </div>
             </Card>
           </motion.div>

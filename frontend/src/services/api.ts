@@ -33,26 +33,46 @@ export class UpstreamError  extends ApiError {
 
 // ── Axios instance ────────────────────────────────────────────────────────────
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+
+// Diagnostic: log resolved baseURL at module load time
+console.log("[api] baseURL →", BASE_URL);
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api",
+  baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
   timeout: 60_000,
 });
 
+// ── Request interceptor ───────────────────────────────────────────────────────
+
 client.interceptors.request.use(
-  (config) => config,
-  (error)  => Promise.reject(error),
+  (config) => {
+    const method = config.method?.toUpperCase() ?? "?";
+    const url    = (config.baseURL ?? "") + (config.url ?? "");
+    console.log(`[api] ${method} ${url}`);
+    return config;
+  },
+  (error) => Promise.reject(error),
 );
 
+// ── Response interceptor ──────────────────────────────────────────────────────
+
 client.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    console.log(`[api] ← ${response.status} ${response.config.url}`);
+    return response.data;
+  },
   (error) => {
-    const status = error.response?.status;
+    const status = error.response?.status as number | undefined;
+    const url    = error.config?.url ?? "unknown";
     const detail = error.response?.data?.detail ?? error.message ?? "Unexpected error.";
+
+    console.error(`[api] ✗ ${status ?? "NET"} ${url} —`, detail);
 
     if (status === 404) return Promise.reject(new NotFoundError(detail));
     if (status === 422) return Promise.reject(new ValidationError(detail));
-    if (status >= 500)  return Promise.reject(new UpstreamError(detail));
+    if (status != null && status >= 500) return Promise.reject(new UpstreamError(detail));
     return Promise.reject(new ApiError(detail, status));
   },
 );

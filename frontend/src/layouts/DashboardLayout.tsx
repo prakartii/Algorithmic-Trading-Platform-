@@ -8,9 +8,8 @@ export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#080810] text-slate-100 antialiased">
+    <div className="flex h-screen overflow-hidden bg-canvas text-slate-100 antialiased">
 
-      {/* Mobile backdrop */}
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/60 backdrop-blur-[2px] lg:hidden"

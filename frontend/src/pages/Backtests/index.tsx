@@ -11,40 +11,47 @@ import EquityCurveChart from "@/components/charts/EquityCurveChart";
 import { formatCurrency, formatPercent, formatNumber } from "@/utils/formatters";
 import { cn } from "@/utils/cn";
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-
 const TODAY          = new Date().toISOString().slice(0, 10);
 const FIVE_YEARS_AGO = new Date(Date.now() - 5 * 365.25 * 864e5).toISOString().slice(0, 10);
 const EASE           = [0.16, 1, 0.3, 1] as const;
 
-const TH = "px-4 py-2.5 text-[10px] font-semibold tracking-[0.1em] uppercase text-slate-600 whitespace-nowrap";
-const TD = "px-4 py-2.5 text-[13px] border-b border-[#ffffff04] last-of-type:border-0";
-
-// ── Input styles ──────────────────────────────────────────────────────────────
+const TH = "px-4 py-3 text-[11px] font-medium tracking-[0.07em] uppercase text-slate-500 whitespace-nowrap";
+const TD = "px-4 py-[11px] text-[13px] border-b border-white/[0.04] last:border-0";
 
 const inputCls =
-  "h-8 px-3 rounded-lg bg-white/[0.03] border border-[#ffffff09] text-slate-100 text-[13px] w-full " +
-  "focus:outline-none focus:border-blue-500/40 focus:bg-white/[0.05] transition-colors placeholder:text-slate-700";
+  "h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-slate-100 text-[13px] w-full " +
+  "focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.05] transition-colors placeholder:text-slate-700";
 
-const labelCls = "text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600 mb-1.5 block select-none";
-
-// ── Metric row ────────────────────────────────────────────────────────────────
-
-function MetricRow({ label, value, color }: { label: string; value: string; color?: string }) {
-  return (
-    <div className="flex items-center justify-between py-2.5 border-b border-[#ffffff05] last:border-0">
-      <span className="text-[12px] text-slate-500">{label}</span>
-      <span className={cn("text-[13px] font-semibold tabular-nums", color ?? "text-slate-200")}>
-        {value}
-      </span>
-    </div>
-  );
-}
-
-// ── Component ─────────────────────────────────────────────────────────────────
+const labelCls = "text-[11px] font-medium uppercase tracking-[0.09em] text-slate-500 mb-1.5 block select-none";
 
 interface FormState {
   symbol: string; start_date: string; end_date: string; initial_capital: string;
+}
+
+interface MetricCardProps {
+  label:    string;
+  value:    string;
+  sub?:     string;
+  color?:   string;
+  positive?: boolean;
+}
+
+function MetricCard({ label, value, sub, color, positive }: MetricCardProps) {
+  return (
+    <div className="bg-[#0e0e15] border border-white/[0.07] rounded-xl p-4">
+      <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-slate-500 mb-2 leading-none">{label}</p>
+      <p className={cn("text-[22px] font-bold tabular-nums leading-none tracking-tight", color ?? "text-slate-100")}>
+        {value}
+      </p>
+      {sub && <p className="text-[11px] text-slate-600 mt-1.5 leading-none">{sub}</p>}
+      {positive !== undefined && (
+        <div className={cn(
+          "mt-2 h-[2px] rounded-full w-8",
+          positive ? "bg-emerald-500/50" : "bg-red-500/50",
+        )} />
+      )}
+    </div>
+  );
 }
 
 export default function Backtests() {
@@ -90,27 +97,29 @@ export default function Backtests() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.18 }}
       className="space-y-5"
     >
 
-      {/* ── Form ── */}
+      {/* ── Strategy config ── */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22, ease: EASE }}
+        transition={{ duration: 0.24, ease: EASE }}
       >
         <Card>
           <CardHeader>
             <div>
-              <h3 className="text-[13px] font-semibold text-slate-200">Run Backtest</h3>
-              <p className="text-[11px] text-slate-600 mt-0.5">50 / 200 SMA Crossover Strategy</p>
+              <h3 className="text-[14px] font-semibold text-slate-200">Run Backtest</h3>
+              <p className="text-[12px] text-slate-500 mt-0.5">
+                SMA 50/200 Golden Cross — Buy when 50-day SMA crosses above 200-day SMA
+              </p>
             </div>
             <Badge label="SMA Crossover" variant="blue" />
           </CardHeader>
 
           <div className="p-5">
-            <form onSubmit={handleSubmit} className="grid grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+            <form onSubmit={handleSubmit} className="grid grid-cols-2 lg:grid-cols-5 gap-4 items-end">
               <div>
                 <label className={labelCls}>Symbol</label>
                 <input
@@ -120,7 +129,7 @@ export default function Backtests() {
                   placeholder="AAPL"
                   maxLength={10}
                   required
-                  className={cn(inputCls, "font-mono")}
+                  className={cn(inputCls, "font-mono font-semibold")}
                 />
               </div>
 
@@ -147,7 +156,7 @@ export default function Backtests() {
               </div>
 
               <div>
-                <label className={labelCls}>Capital ($)</label>
+                <label className={labelCls}>Initial Capital</label>
                 <input
                   type="number"
                   value={form.initial_capital}
@@ -160,7 +169,7 @@ export default function Backtests() {
               </div>
 
               <div>
-                <Button type="submit" loading={running} className="w-full h-8">
+                <Button type="submit" loading={running} className="w-full h-9 text-[13px]">
                   {running ? "Running…" : "Run Backtest"}
                 </Button>
               </div>
@@ -175,65 +184,116 @@ export default function Backtests() {
         </Card>
       </motion.div>
 
-      {/* ── Running ── */}
+      {/* ── Running indicator ── */}
       {running && (
-        <div className="flex items-center justify-center gap-3 h-40 text-slate-500 text-[13px]">
+        <div className="flex items-center justify-center gap-3 h-44 bg-[#0e0e15] border border-white/[0.07] rounded-xl">
           <Spinner />
-          Running backtest — this may take a moment…
+          <div>
+            <p className="text-[13px] text-slate-400 font-medium">Running backtest…</p>
+            <p className="text-[12px] text-slate-600 mt-0.5">Fetching {form.symbol} data and simulating strategy</p>
+          </div>
         </div>
       )}
 
       {/* ── Results ── */}
       {result && !running && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: EASE }}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-5"
+          transition={{ duration: 0.3, ease: EASE }}
+          className="space-y-5"
         >
-          {/* Chart */}
-          <Card className="lg:col-span-2">
+          {/* 5 key metric cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <MetricCard
+              label="Total Return"
+              value={formatPercent(result.total_return_pct)}
+              sub={`${formatCurrency(result.initial_capital)} → ${formatCurrency(result.final_value)}`}
+              color={result.total_return_pct >= 0 ? "text-emerald-400" : "text-red-400"}
+              positive={result.total_return_pct >= 0}
+            />
+            <MetricCard
+              label="Sharpe Ratio"
+              value={formatNumber(result.sharpe_ratio)}
+              sub={`Sortino: ${formatNumber(result.sortino_ratio)}`}
+              color={result.sharpe_ratio >= 1 ? "text-emerald-400" : result.sharpe_ratio >= 0 ? "text-slate-100" : "text-red-400"}
+            />
+            <MetricCard
+              label="Win Rate"
+              value={formatPercent(result.win_rate_pct)}
+              sub={`${result.trade_count} total trades`}
+              color={result.win_rate_pct >= 50 ? "text-emerald-400" : "text-amber-400"}
+            />
+            <MetricCard
+              label="Max Drawdown"
+              value={formatPercent(result.max_drawdown_pct)}
+              sub={`Vol: ${formatPercent(result.volatility_pct)}`}
+              color="text-red-400"
+              positive={false}
+            />
+            <MetricCard
+              label="Profit Factor"
+              value={formatNumber(result.profit_factor)}
+              sub={`CAGR: ${formatPercent(result.cagr_pct)}`}
+              color={result.profit_factor >= 1.5 ? "text-emerald-400" : result.profit_factor >= 1 ? "text-slate-100" : "text-red-400"}
+            />
+          </div>
+
+          {/* Equity curve */}
+          <Card>
             <CardHeader>
               <div>
-                <h3 className="text-[13px] font-semibold text-slate-200">
+                <h3 className="text-[14px] font-semibold text-slate-200">
                   {result.symbol} — Equity Curve
                 </h3>
-                <p className="text-[11px] text-slate-600 mt-0.5">
-                  {result.start_date.slice(0, 7)} → {result.end_date.slice(0, 7)} ·{" "}
-                  {formatCurrency(result.initial_capital)} initial
+                <p className="text-[12px] text-slate-500 mt-0.5">
+                  {result.start_date.slice(0, 10)} → {result.end_date.slice(0, 10)} · {formatCurrency(result.initial_capital)} initial capital
                 </p>
               </div>
-              <Badge
-                label={formatPercent(result.total_return_pct)}
-                variant={result.total_return_pct >= 0 ? "success" : "danger"}
-              />
+              <div className="flex items-center gap-2">
+                <Badge
+                  label={formatPercent(result.total_return_pct)}
+                  variant={result.total_return_pct >= 0 ? "success" : "danger"}
+                />
+                <Badge
+                  label={`Sharpe ${result.sharpe_ratio.toFixed(2)}`}
+                  variant={result.sharpe_ratio >= 1 ? "blue" : "default"}
+                />
+              </div>
             </CardHeader>
-            <div className="p-4 pt-3">
+            <div className="px-4 pt-4 pb-3">
               <EquityCurveChart
                 data={result.equity_curve}
                 initialCapital={result.initial_capital}
-                height={280}
+                height={300}
               />
             </div>
           </Card>
 
-          {/* Metrics */}
+          {/* Detailed metrics */}
           <Card>
             <CardHeader>
-              <h3 className="text-[13px] font-semibold text-slate-200">Performance</h3>
-              <span className="text-[11px] font-mono text-slate-600">{result.symbol}</span>
+              <h3 className="text-[14px] font-semibold text-slate-200">Detailed Performance</h3>
+              <span className="text-[12px] font-mono text-slate-500">{result.symbol}</span>
             </CardHeader>
-            <div className="px-5 py-1">
-              <MetricRow label="Total Return"    value={formatPercent(result.total_return_pct)}  color={result.total_return_pct >= 0 ? "text-emerald-400" : "text-red-400"} />
-              <MetricRow label="CAGR"            value={formatPercent(result.cagr_pct)}           color={result.cagr_pct >= 0 ? "text-emerald-400" : "text-red-400"} />
-              <MetricRow label="Final Value"     value={formatCurrency(result.final_value)}       color="text-slate-100" />
-              <MetricRow label="Sharpe Ratio"    value={formatNumber(result.sharpe_ratio)} />
-              <MetricRow label="Sortino Ratio"   value={formatNumber(result.sortino_ratio)} />
-              <MetricRow label="Max Drawdown"    value={formatPercent(result.max_drawdown_pct)}  color="text-red-400" />
-              <MetricRow label="Volatility"      value={formatPercent(result.volatility_pct)} />
-              <MetricRow label="Win Rate"        value={formatPercent(result.win_rate_pct)} />
-              <MetricRow label="Profit Factor"   value={formatNumber(result.profit_factor)} />
-              <MetricRow label="Total Trades"    value={String(result.trade_count)} />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-x divide-white/[0.05]">
+              {[
+                { label: "Total Return",  value: formatPercent(result.total_return_pct),  color: result.total_return_pct >= 0 ? "text-emerald-400" : "text-red-400" },
+                { label: "CAGR",          value: formatPercent(result.cagr_pct),           color: result.cagr_pct >= 0 ? "text-emerald-400" : "text-red-400" },
+                { label: "Sharpe Ratio",  value: formatNumber(result.sharpe_ratio),        color: "" },
+                { label: "Sortino Ratio", value: formatNumber(result.sortino_ratio),       color: "" },
+                { label: "Final Value",   value: formatCurrency(result.final_value),       color: "text-slate-100" },
+                { label: "Max Drawdown",  value: formatPercent(result.max_drawdown_pct),  color: "text-red-400" },
+                { label: "Volatility",    value: formatPercent(result.volatility_pct),    color: "" },
+                { label: "Win Rate",      value: formatPercent(result.win_rate_pct),       color: "" },
+                { label: "Profit Factor", value: formatNumber(result.profit_factor),       color: "" },
+                { label: "Total Trades",  value: String(result.trade_count),              color: "" },
+              ].map((m) => (
+                <div key={m.label} className="px-4 py-4">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.07em] text-slate-500 leading-none mb-2">{m.label}</p>
+                  <p className={cn("text-[15px] font-semibold tabular-nums leading-none", m.color || "text-slate-200")}>{m.value}</p>
+                </div>
+              ))}
             </div>
           </Card>
         </motion.div>
@@ -243,21 +303,29 @@ export default function Backtests() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22, delay: 0.08, ease: EASE }}
+        transition={{ duration: 0.24, delay: 0.08, ease: EASE }}
       >
-        <Card title="Backtest History">
+        <Card>
+          <CardHeader>
+            <div>
+              <h3 className="text-[14px] font-semibold text-slate-200">Backtest History</h3>
+              <p className="text-[12px] text-slate-500 mt-0.5">{history.length} run{history.length !== 1 ? "s" : ""}</p>
+            </div>
+          </CardHeader>
+
           {histLoad ? (
-            <div className="flex justify-center py-12"><Spinner /></div>
+            <div className="flex justify-center py-14"><Spinner /></div>
           ) : history.length === 0 ? (
-            <div className="flex justify-center py-12 text-[13px] text-slate-600">
-              No completed backtests yet.
+            <div className="flex flex-col items-center justify-center py-14 gap-2">
+              <p className="text-[13px] text-slate-600">No backtests yet.</p>
+              <p className="text-[12px] text-slate-700">Configure a backtest above and click Run.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#ffffff07]">
-                    {["Symbol","Start","End","Capital","Return","Sharpe","Drawdown","Trades","Status"].map((h) => (
+                  <tr className="border-b border-white/[0.06]">
+                    {["Symbol", "Start", "End", "Capital", "Return", "Sharpe", "Drawdown", "Trades", "Status"].map((h) => (
                       <th key={h} className={cn(TH, h === "Symbol" ? "text-left" : h === "Status" ? "text-center" : "text-right")}>
                         {h}
                       </th>
@@ -266,18 +334,21 @@ export default function Backtests() {
                 </thead>
                 <tbody>
                   {history.map((bt, i) => (
-                    <tr key={bt.id ?? i} className="hover:bg-white/[0.015] transition-colors">
-                      <td className={cn(TD, "text-left font-mono font-semibold text-slate-200")}>{bt.symbol}</td>
-                      <td className={cn(TD, "text-right text-slate-600 tabular-nums text-[11px]")}>{bt.start_date.slice(0,7)}</td>
-                      <td className={cn(TD, "text-right text-slate-600 tabular-nums text-[11px]")}>{bt.end_date.slice(0,7)}</td>
+                    <tr key={bt.id ?? i} className="hover:bg-white/[0.02] transition-colors">
+                      <td className={cn(TD, "text-left font-mono font-semibold text-slate-100")}>{bt.symbol}</td>
+                      <td className={cn(TD, "text-right text-slate-500 tabular-nums text-[12px]")}>{bt.start_date.slice(0, 10)}</td>
+                      <td className={cn(TD, "text-right text-slate-500 tabular-nums text-[12px]")}>{bt.end_date.slice(0, 10)}</td>
                       <td className={cn(TD, "text-right text-slate-400 tabular-nums")}>{formatCurrency(bt.initial_capital)}</td>
-                      <td className={cn(TD, "text-right font-semibold tabular-nums", (bt.total_return_pct ?? 0) >= 0 ? "text-emerald-400" : "text-red-400")}>
+                      <td className={cn(
+                        TD, "text-right font-semibold tabular-nums",
+                        (bt.total_return_pct ?? 0) >= 0 ? "text-emerald-400" : "text-red-400",
+                      )}>
                         {bt.total_return_pct != null ? formatPercent(bt.total_return_pct) : "—"}
                       </td>
                       <td className={cn(TD, "text-right text-slate-400 tabular-nums")}>
                         {bt.sharpe_ratio != null ? bt.sharpe_ratio.toFixed(2) : "—"}
                       </td>
-                      <td className={cn(TD, "text-right text-slate-400 tabular-nums")}>
+                      <td className={cn(TD, "text-right text-red-400 tabular-nums")}>
                         {bt.max_drawdown_pct != null ? formatPercent(bt.max_drawdown_pct) : "—"}
                       </td>
                       <td className={cn(TD, "text-right text-slate-500")}>{bt.trade_count ?? "—"}</td>

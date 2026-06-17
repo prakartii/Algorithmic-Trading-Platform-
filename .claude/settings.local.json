@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(curl *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('portfolio_value:', d['portfolio_value'], '| positions:', d['position_count']\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('backtests:', len\\(d\\), '| first:', d[0]['symbol'] if d else 'none'\\)\")"
+    ]
+  }
+}

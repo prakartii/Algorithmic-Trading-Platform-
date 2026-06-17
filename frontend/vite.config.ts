@@ -13,8 +13,20 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:8000",
+        target: "http://127.0.0.1:8000",
         changeOrigin: true,
+        secure: false,
+        configure: (proxy) => {
+          proxy.on("error", (err) => {
+            console.error("[vite-proxy] error:", err.message);
+          });
+          proxy.on("proxyReq", (_proxyReq, req) => {
+            console.log("[vite-proxy] →", req.method, req.url);
+          });
+          proxy.on("proxyRes", (proxyRes, req) => {
+            console.log("[vite-proxy] ←", proxyRes.statusCode, req.url);
+          });
+        },
       },
     },
   },
