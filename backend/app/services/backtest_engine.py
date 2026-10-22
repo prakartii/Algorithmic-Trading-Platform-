@@ -111,7 +111,9 @@ class BacktestEngine:
         total_return_pct = self._extract(stats, "Total Return [%]")
         cagr_pct         = self._cagr(total_return_pct, years)
         sharpe           = self._extract(stats, "Sharpe Ratio")
-        max_dd_pct       = self._extract(stats, "Max Drawdown [%]")
+        # VectorBT reports drawdown as a positive magnitude; expose it as a negative
+        # percentage, consistent with RiskEngine.
+        max_dd_pct       = -abs(self._extract(stats, "Max Drawdown [%]"))
         
         trade_pnls = []
 
