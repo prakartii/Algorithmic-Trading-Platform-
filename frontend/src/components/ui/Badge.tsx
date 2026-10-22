@@ -16,8 +16,8 @@ const V: Record<NonNullable<BadgeProps["variant"]>, string> = {
 export default function Badge({ label, variant = "default" }: BadgeProps) {
   return (
     <span className={cn(
-      "inline-flex items-center px-2 py-[3px] rounded-md",
-      "text-[10px] font-semibold tracking-[0.06em] uppercase border select-none",
+      "inline-flex items-center px-1.5 py-[2px] rounded",
+      "text-[10px] font-medium tracking-[0.05em] uppercase border select-none",
       V[variant],
     )}>
       {label}

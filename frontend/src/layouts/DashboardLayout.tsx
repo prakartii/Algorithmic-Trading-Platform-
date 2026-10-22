@@ -8,7 +8,7 @@ export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-canvas text-slate-100 antialiased">
+    <div className="flex h-screen overflow-hidden bg-[#0b0c0d] text-slate-100 antialiased">
 
       {mobileOpen && (
         <div
@@ -24,7 +24,7 @@ export default function DashboardLayout() {
         onMobileClose={() => setMobileOpen(false)}
       />
 
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden bg-canvas lg:m-1.5 lg:ml-0 lg:rounded-lg lg:border lg:border-white/[0.06]">
         <TopBar onMobileMenuClick={() => setMobileOpen(true)} />
         <main className="flex-1 overflow-y-auto">
           <div className="min-h-full p-5 lg:p-6">

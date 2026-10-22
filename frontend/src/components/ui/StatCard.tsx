@@ -38,17 +38,11 @@ export default function StatCard({
 
   return (
     <div className={cn(
-      "relative bg-[#0f1012] border border-white/[0.07] rounded-xl p-5",
-      "transition-all duration-150 hover:border-white/[0.11]",
+      "relative bg-[#0f1012] border border-white/[0.06] rounded-lg p-4",
+      "shadow-[0_1px_0_0_rgba(255,255,255,0.02)_inset]",
+      "transition-colors duration-150 hover:border-white/[0.09]",
       className,
     )}>
-      {!isNeutral && (
-        <div className={cn(
-          "absolute inset-x-0 top-0 h-px rounded-t-xl",
-          positive ? "bg-emerald-500/50" : "bg-red-500/50",
-        )} />
-      )}
-
       {loading ? (
         <div className="space-y-3 animate-pulse">
           <div className="h-2.5 w-20 bg-white/[0.06] rounded" />
@@ -57,12 +51,12 @@ export default function StatCard({
         </div>
       ) : (
         <>
-          <p className="text-[11px] font-medium tracking-[0.10em] uppercase text-slate-500 select-none mb-2 leading-none">
+          <p className="text-[12px] font-medium text-slate-500 select-none mb-2.5 leading-none">
             {label}
           </p>
 
           <p className={cn(
-            "text-[28px] font-bold leading-none tracking-tight font-tabular",
+            "text-[24px] font-semibold leading-none tracking-[-0.02em] font-tabular",
             valueColor,
           )}>
             {value}

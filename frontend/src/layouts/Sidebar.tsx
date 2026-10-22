@@ -64,18 +64,14 @@ function NavItem({
     <NavLink to={to} end={end} className="block px-2">
       {({ isActive }) => (
         <div className={cn(
-          "relative flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg",
+          "relative flex items-center gap-2.5 px-2.5 py-[6px] rounded-md",
           "text-[13px] font-medium transition-colors duration-100 cursor-pointer select-none",
           isActive
-            ? "bg-blue-500/[0.12] text-blue-400"
-            : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.05]",
+            ? "bg-white/[0.07] text-slate-100"
+            : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]",
           collapsed && "justify-center px-0",
         )}>
-          {isActive && !collapsed && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2.5 w-[3px] h-[16px] bg-blue-400 rounded-r-full" />
-          )}
-
-          <span className={cn("shrink-0", isActive ? "text-blue-400" : "text-slate-600")}>
+          <span className={cn("shrink-0", isActive ? "text-slate-200" : "text-slate-500")}>
             {icon}
           </span>
 
@@ -103,7 +99,7 @@ function GroupLabel({ label, collapsed }: { label: string; collapsed: boolean })
   if (collapsed) return <div className="h-3" />;
   return (
     <div className="px-4 pt-5 pb-1">
-      <span className="text-[10px] font-semibold tracking-[0.16em] uppercase text-slate-700 select-none">
+      <span className="text-[11px] font-medium text-slate-600 select-none">
         {label}
       </span>
     </div>
@@ -125,7 +121,7 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
       transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "flex flex-col h-full shrink-0 overflow-hidden",
-        "bg-[#08090a] border-r border-white/[0.06]",
+        "bg-[#0b0c0d]",
         "fixed inset-y-0 left-0 z-40",
         "lg:static lg:z-auto lg:translate-x-0",
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
@@ -134,7 +130,7 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
     >
       {/* Brand */}
       <div className={cn(
-        "flex items-center h-[52px] shrink-0 border-b border-white/[0.06]",
+        "flex items-center h-[52px] shrink-0",
         collapsed ? "justify-center" : "px-4 gap-2.5",
       )}>
         <Logo />
@@ -146,7 +142,7 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.1 }}
-              className="text-[13px] font-bold tracking-[0.14em] uppercase text-slate-100 select-none"
+              className="text-[13px] font-semibold tracking-[-0.01em] text-slate-100 select-none"
             >
               QuantLab
             </motion.span>
@@ -175,9 +171,7 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
         ))}
       </nav>
 
-      <div className="mx-3 h-px bg-white/[0.06]" />
-
-      {/* Bottom */}
+            {/* Bottom */}
       <div className="py-2 space-y-px">
         <NavItem
           to="/settings"

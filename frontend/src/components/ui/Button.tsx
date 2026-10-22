@@ -8,7 +8,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const V: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary:   "bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white border-transparent shadow-sm",
+  primary:   "bg-blue-500 hover:bg-blue-400 active:bg-blue-600 text-white border-white/[0.12] shadow-[0_1px_2px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.14)]",
   secondary: "bg-white/[0.05] hover:bg-white/[0.09] text-slate-300 border-white/[0.08] hover:border-white/[0.14]",
   danger:    "bg-red-500/[0.10] hover:bg-red-500/[0.16] text-red-400 border-red-500/25",
   ghost:     "bg-transparent hover:bg-white/[0.05] text-slate-400 hover:text-slate-200 border-transparent",
@@ -28,7 +28,7 @@ export default function Button({
     <button
       disabled={disabled || loading}
       className={cn(
-        "inline-flex items-center justify-center gap-1.5 rounded-lg font-semibold border",
+        "inline-flex items-center justify-center gap-1.5 rounded-md font-medium border",
         "transition-all duration-100 select-none",
         "disabled:opacity-40 disabled:cursor-not-allowed",
         V[variant], S[size], className,
