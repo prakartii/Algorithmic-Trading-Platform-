@@ -1,102 +1,121 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { getHealth, type HealthResponse } from "@/services/api";
+import { getPreferences, savePreferences, DEFAULT_PREFS } from "@/utils/storage";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 const inputCls =
-  "h-9 px-3 rounded-lg bg-white/[0.03] border border-white/[0.07] text-slate-500 text-[13px] w-full " +
-  "focus:outline-none cursor-not-allowed opacity-70 select-none";
+  "h-8 px-3 rounded-md bg-white/[0.03] border border-white/[0.08] text-slate-200 text-[13px] w-full " +
+  "placeholder:text-slate-600 focus:outline-none focus:border-blue-500/60 focus:bg-white/[0.04] transition-colors";
 
-const labelCls = "text-[11px] font-medium uppercase tracking-[0.09em] text-slate-500 mb-1.5 block select-none";
+function Row({ label, desc, children }: { label: string; desc?: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-6 px-5 py-4 border-b border-white/[0.05] last:border-0">
+      <div className="min-w-0">
+        <p className="text-[13px] font-medium text-slate-200">{label}</p>
+        {desc && <p className="text-[12px] text-slate-500 mt-0.5">{desc}</p>}
+      </div>
+      <div className="shrink-0">{children}</div>
+    </div>
+  );
+}
 
-interface SettingRow { label: string; value: string; desc?: string }
-
-const SECTIONS: { title: string; desc?: string; rows: SettingRow[] }[] = [
-  {
-    title: "Alpaca Connection",
-    desc:  "Paper trading account connected via Alpaca Markets API.",
-    rows: [
-      { label: "Environment",  value: "Paper Trading",               desc: "Switch to live trading in a future release." },
-      { label: "API Key",      value: "•••••••••••••••••PK3AAPL",    desc: "Configured via ALPACA_API_KEY environment variable." },
-      { label: "Base URL",     value: "https://paper-api.alpaca.markets", desc: "Alpaca paper trading API endpoint." },
-    ],
-  },
-  {
-    title: "Default Order Settings",
-    rows: [
-      { label: "Default Size",      value: "1 share",        desc: "Override per order on the Paper Trading page." },
-      { label: "Stocks TIF",        value: "DAY",            desc: "Time-in-force for equity orders." },
-      { label: "Crypto TIF",        value: "GTC",            desc: "Time-in-force for crypto orders (BTCUSD, ETHUSD…)." },
-    ],
-  },
-  {
-    title: "Backtesting Defaults",
-    rows: [
-      { label: "Initial Capital",   value: "$10,000",        desc: "Default starting capital for new backtests." },
-      { label: "Date Range",        value: "5 years",        desc: "Rolling window from today." },
-    ],
-  },
-];
+type Conn = "checking" | "up" | "down";
 
 export default function Settings() {
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+  const [conn,   setConn]   = useState<Conn>("checking");
+  const [prefs,  setPrefs]  = useState(getPreferences);
+  const [saved,  setSaved]  = useState(false);
+
+  useEffect(() => {
+    getHealth()
+      .then((h) => { setHealth(h); setConn("up"); })
+      .catch(() => setConn("down"));
+  }, []);
+
+  function save(e: React.FormEvent) {
+    e.preventDefault();
+    const next = {
+      defaultCapital: Math.max(100, Number(prefs.defaultCapital) || DEFAULT_PREFS.defaultCapital),
+      defaultYears:   Math.min(20, Math.max(2, Number(prefs.defaultYears) || DEFAULT_PREFS.defaultYears)),
+    };
+    setPrefs(next);
+    savePreferences(next);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1800);
+  }
+
+  const status = (ok: boolean | undefined) =>
+    conn === "checking" ? <Badge label="Checking" />
+      : ok ? <Badge label="Connected" variant="success" />
+      : <Badge label="Not configured" variant="warning" />;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, ease: EASE }}
-      className="max-w-xl space-y-8"
+      className="max-w-2xl space-y-7"
     >
       <div>
-        <h2 className="text-[18px] font-bold text-slate-100">Settings</h2>
-        <p className="text-[13px] text-slate-500 mt-1.5">
-          Platform configuration. Editable settings are coming in a future release.
-        </p>
+        <h1 className="text-[16px] font-semibold text-slate-100">Settings</h1>
+        <p className="text-[12px] text-slate-500 mt-0.5">Connection status and your local defaults.</p>
       </div>
 
-      {SECTIONS.map((section, si) => (
-        <motion.div
-          key={section.title}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.22, delay: si * 0.07, ease: EASE }}
-        >
-          <div className="mb-3">
-            <h3 className="text-[13px] font-semibold text-slate-300">{section.title}</h3>
-            {section.desc && (
-              <p className="text-[12px] text-slate-600 mt-0.5">{section.desc}</p>
-            )}
-          </div>
+      <section>
+        <h2 className="text-[12px] font-medium text-slate-500 mb-2.5">Backend</h2>
+        <Card>
+          <Row label="API server" desc="FastAPI service the dashboard talks to (proxied at /api).">
+            {conn === "checking" ? <Badge label="Checking" />
+              : conn === "up" ? <Badge label="Online" variant="success" />
+              : <Badge label="Offline" variant="danger" />}
+          </Row>
+          <Row label="Alpaca paper trading" desc="Set ALPACA_API_KEY and ALPACA_SECRET_KEY in backend/.env.">
+            {status(health?.alpaca)}
+          </Row>
+          <Row label="Supabase persistence" desc="Without it, backtest history is kept in memory until restart.">
+            {status(health?.supabase)}
+          </Row>
+        </Card>
+        {conn === "down" && (
+          <p className="text-[12px] text-red-400/90 mt-2.5">
+            Cannot reach the API. Start it with <span className="font-mono">uvicorn main:app --port 8000</span> from the backend folder.
+          </p>
+        )}
+      </section>
 
-          <div className="rounded-xl border border-white/[0.07] bg-[#0f1012] divide-y divide-white/[0.05] overflow-hidden">
-            {section.rows.map((row) => (
-              <div key={row.label} className="px-5 py-4">
-                <label className={labelCls}>{row.label}</label>
-                <input
-                  type="text"
-                  value={row.value}
-                  readOnly
-                  disabled
-                  className={inputCls}
-                />
-                {row.desc && (
-                  <p className="text-[11px] text-slate-700 mt-1.5">{row.desc}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      ))}
+      <form onSubmit={save}>
+        <h2 className="text-[12px] font-medium text-slate-500 mb-2.5">Backtesting defaults</h2>
+        <Card>
+          <Row label="Initial capital" desc="Starting balance pre-filled on the Backtesting page.">
+            <input
+              type="number" min={100} step={100} className={inputCls + " w-36 text-right tabular-nums"}
+              value={prefs.defaultCapital}
+              onChange={(e) => setPrefs({ ...prefs, defaultCapital: Number(e.target.value) })}
+            />
+          </Row>
+          <Row label="History window (years)" desc="How far back the default date range starts. Minimum 2.">
+            <input
+              type="number" min={2} max={20} className={inputCls + " w-36 text-right tabular-nums"}
+              value={prefs.defaultYears}
+              onChange={(e) => setPrefs({ ...prefs, defaultYears: Number(e.target.value) })}
+            />
+          </Row>
+        </Card>
+        <div className="flex items-center gap-3 mt-3">
+          <Button type="submit" size="md">Save defaults</Button>
+          {saved && <span className="text-[12px] text-emerald-400">Saved</span>}
+        </div>
+      </form>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.22, delay: 0.3, ease: EASE }}
-        className="px-4 py-3.5 rounded-xl bg-amber-500/[0.05] border border-amber-500/[0.12]"
-      >
-        <p className="text-[12px] text-amber-600/80 leading-relaxed">
-          API keys and sensitive configuration are managed via environment variables on the backend server.
-          They are never exposed to the frontend.
-        </p>
-      </motion.div>
+      <p className="text-[12px] text-slate-600 leading-relaxed">
+        API keys live in <span className="font-mono">backend/.env</span> and are never sent to the browser.
+      </p>
     </motion.div>
   );
 }
