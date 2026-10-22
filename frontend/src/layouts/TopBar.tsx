@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/utils/cn";
+import CommandPalette from "@/components/CommandPalette";
 
 interface TopBarProps {
   onMobileMenuClick: () => void;
@@ -68,6 +69,18 @@ const STATUS_CONFIG: Record<MarketStatus, { dot: string; text: string; bg: strin
 
 export default function TopBar({ onMobileMenuClick }: TopBarProps) {
   const location = useLocation();
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const { status, short, etTime, etDate } = useMarketClock();
 
   const meta  = META[location.pathname] ?? { title: "QuantLab" };
@@ -97,11 +110,11 @@ export default function TopBar({ onMobileMenuClick }: TopBarProps) {
       <div className="flex-1" />
 
       {/* Search */}
-      <button className="hidden md:flex items-center gap-2 h-[30px] px-3 rounded-lg bg-white/[0.04] border border-white/[0.07] text-slate-500 text-[12px] hover:text-slate-300 hover:bg-white/[0.06] hover:border-white/[0.10] transition-all">
+      <button onClick={() => setPaletteOpen(true)} className="hidden md:flex items-center gap-2 h-[30px] px-3 rounded-lg bg-white/[0.04] border border-white/[0.07] text-slate-500 text-[12px] hover:text-slate-300 hover:bg-white/[0.06] hover:border-white/[0.10] transition-all">
         <IconSearch />
         <span className="hidden lg:block text-[11px] text-slate-600">Quick search…</span>
         <kbd className="hidden lg:flex items-center gap-0.5 ml-1 text-[10px] font-mono bg-white/[0.04] border border-white/[0.08] px-1.5 py-0.5 rounded text-slate-700">
-          ⌘K
+          Ctrl K
         </kbd>
       </button>
 
@@ -142,6 +155,7 @@ export default function TopBar({ onMobileMenuClick }: TopBarProps) {
         </span>
       </button>
 
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </header>
   );
 }
