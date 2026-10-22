@@ -38,7 +38,7 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, sub, color, positive }: MetricCardProps) {
   return (
-    <div className="bg-[#0e0e15] border border-white/[0.07] rounded-xl p-4">
+    <div className="bg-[#0f1012] border border-white/[0.07] rounded-xl p-4">
       <p className="text-[11px] font-medium tracking-[0.08em] uppercase text-slate-500 mb-2 leading-none">{label}</p>
       <p className={cn("text-[22px] font-bold tabular-nums leading-none tracking-tight", color ?? "text-slate-100")}>
         {value}
@@ -186,7 +186,7 @@ export default function Backtests() {
 
       {/* ── Running indicator ── */}
       {running && (
-        <div className="flex items-center justify-center gap-3 h-44 bg-[#0e0e15] border border-white/[0.07] rounded-xl">
+        <div className="flex items-center justify-center gap-3 h-44 bg-[#0f1012] border border-white/[0.07] rounded-xl">
           <Spinner />
           <div>
             <p className="text-[13px] text-slate-400 font-medium">Running backtest…</p>

@@ -22,10 +22,10 @@ const IconX         = () => <svg {...ip} viewBox="0 0 24 24"><line x1="18" y1="6
 function Logo() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <rect width="24" height="24" rx="5" fill="#3b82f6" fillOpacity="0.12"/>
-      <rect x="4"  y="16" width="3.5" height="5"  rx="1" fill="#93c5fd" fillOpacity="0.7"/>
-      <rect x="10" y="10" width="3.5" height="11" rx="1" fill="#3b82f6"/>
-      <rect x="16" y="13" width="3.5" height="8"  rx="1" fill="#60a5fa" fillOpacity="0.85"/>
+      <rect width="24" height="24" rx="5" fill="#5e6ad2" fillOpacity="0.12"/>
+      <rect x="4"  y="16" width="3.5" height="5"  rx="1" fill="#a5acec" fillOpacity="0.7"/>
+      <rect x="10" y="10" width="3.5" height="11" rx="1" fill="#5e6ad2"/>
+      <rect x="16" y="13" width="3.5" height="8"  rx="1" fill="#7c85e0" fillOpacity="0.85"/>
     </svg>
   );
 }
@@ -125,7 +125,7 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
       transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "flex flex-col h-full shrink-0 overflow-hidden",
-        "bg-[#09090e] border-r border-white/[0.06]",
+        "bg-[#08090a] border-r border-white/[0.06]",
         "fixed inset-y-0 left-0 z-40",
         "lg:static lg:z-auto lg:translate-x-0",
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",

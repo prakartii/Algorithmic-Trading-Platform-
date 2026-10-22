@@ -66,7 +66,7 @@ export default function Settings() {
             )}
           </div>
 
-          <div className="rounded-xl border border-white/[0.07] bg-[#0e0e15] divide-y divide-white/[0.05] overflow-hidden">
+          <div className="rounded-xl border border-white/[0.07] bg-[#0f1012] divide-y divide-white/[0.05] overflow-hidden">
             {section.rows.map((row) => (
               <div key={row.label} className="px-5 py-4">
                 <label className={labelCls}>{row.label}</label>

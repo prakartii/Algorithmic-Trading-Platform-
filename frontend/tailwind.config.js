@@ -1,3 +1,5 @@
+import colors from "tailwindcss/colors";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
@@ -5,12 +7,21 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "SF Mono", "ui-monospace", "Menlo", "monospace"],
       },
       colors: {
-        canvas:      "#09090e",
-        surface:     "#0e0e15",
-        elevated:    "#131320",
-        "surface-2": "#191928",
+        canvas:      "#08090a",
+        surface:     "#0f1012",
+        elevated:    "#151619",
+        "surface-2": "#1b1c20",
+        // neutral greys instead of bluish slate
+        slate: colors.zinc,
+        // Linear-style indigo, replaces the default blue scale app-wide
+        blue: {
+          50:  "#f1f2fd", 100: "#e3e5fa", 200: "#c8ccf4", 300: "#a5acec",
+          400: "#7c85e0", 500: "#5e6ad2", 600: "#4f5bc4", 700: "#424ca6",
+          800: "#373f85", 900: "#2e3469", 950: "#1b1f40",
+        },
       },
       keyframes: {
         "fade-in": {

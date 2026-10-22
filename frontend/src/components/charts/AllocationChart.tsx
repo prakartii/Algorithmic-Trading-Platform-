@@ -4,7 +4,7 @@ import {
 import { formatCurrency } from "@/utils/formatters";
 
 const COLORS = [
-  "#3b82f6", "#8b5cf6", "#06b6d4", "#10b981",
+  "#5e6ad2", "#8b5cf6", "#06b6d4", "#10b981",
   "#f59e0b", "#f87171", "#a78bfa", "#34d399",
 ];
 
@@ -14,7 +14,7 @@ function CustomTooltip({ active, payload }: {
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#131320] border border-white/[0.10] rounded-lg px-3 py-2.5 shadow-2xl">
+    <div className="bg-[#151619] border border-white/[0.10] rounded-lg px-3 py-2.5 shadow-2xl">
       <p className="text-[11px] font-semibold text-slate-300 leading-none mb-1">{payload[0].name}</p>
       <p className="text-[13px] font-bold text-slate-50 tabular-nums">{formatCurrency(payload[0].value)}</p>
     </div>

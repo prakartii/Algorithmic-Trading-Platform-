@@ -27,7 +27,7 @@ function CustomTooltip({ active, payload, label, initialCapital }: {
   const pct  = initialCapital != null && initialCapital > 0 ? ((val - initialCapital) / initialCapital) * 100 : null;
 
   return (
-    <div className="bg-[#131320] border border-white/[0.10] rounded-lg px-3.5 py-2.5 shadow-2xl">
+    <div className="bg-[#151619] border border-white/[0.10] rounded-lg px-3.5 py-2.5 shadow-2xl">
       <p className="text-[11px] text-slate-500 mb-2 leading-none">{date}</p>
       <p className="text-[15px] font-bold text-slate-50 tabular-nums leading-none">{formatCurrency(val)}</p>
       {pnl != null && pct != null && (
@@ -127,7 +127,7 @@ export default function EquityCurveChart({
           strokeWidth={1.8}
           fill={`url(#${fillId})`}
           dot={false}
-          activeDot={{ r: 4, fill: lineColor, stroke: "#131320", strokeWidth: 2 }}
+          activeDot={{ r: 4, fill: lineColor, stroke: "#151619", strokeWidth: 2 }}
           animationDuration={700}
           animationEasing="ease-out"
         />

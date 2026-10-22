@@ -74,7 +74,7 @@ export default function TopBar({ onMobileMenuClick }: TopBarProps) {
   const cfg   = STATUS_CONFIG[status];
 
   return (
-    <header className="h-[52px] shrink-0 flex items-center gap-3 px-4 bg-[#09090e] border-b border-white/[0.06] select-none">
+    <header className="h-[52px] shrink-0 flex items-center gap-3 px-4 bg-[#08090a] border-b border-white/[0.06] select-none">
 
       <button
         onClick={onMobileMenuClick}
@@ -129,7 +129,7 @@ export default function TopBar({ onMobileMenuClick }: TopBarProps) {
       {/* Notifications */}
       <button className="relative p-1.5 rounded-md text-slate-600 hover:text-slate-300 hover:bg-white/[0.06] transition-colors">
         <IconBell />
-        <span className="absolute top-[5px] right-[5px] w-[5px] h-[5px] rounded-full bg-blue-500 ring-1 ring-[#09090e]" />
+        <span className="absolute top-[5px] right-[5px] w-[5px] h-[5px] rounded-full bg-blue-500 ring-1 ring-[#08090a]" />
       </button>
 
       {/* User avatar */}

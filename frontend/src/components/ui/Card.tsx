@@ -9,7 +9,7 @@ export function Card({ title, children, className, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "bg-[#0e0e15] border border-white/[0.07] rounded-xl overflow-hidden",
+        "bg-[#0f1012] border border-white/[0.07] rounded-xl overflow-hidden",
         "transition-colors duration-150 hover:border-white/[0.10]",
         className,
       )}

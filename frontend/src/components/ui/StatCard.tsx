@@ -38,7 +38,7 @@ export default function StatCard({
 
   return (
     <div className={cn(
-      "relative bg-[#0e0e15] border border-white/[0.07] rounded-xl p-5",
+      "relative bg-[#0f1012] border border-white/[0.07] rounded-xl p-5",
       "transition-all duration-150 hover:border-white/[0.11]",
       className,
     )}>
