@@ -132,3 +132,15 @@ export function placePaperTrade(params: OrderRequest): Promise<OrderResponse> {
 export function getPositions(): Promise<Position[]> {
   return client.get("/paper-trade/positions");
 }
+
+// ── Health ────────────────────────────────────────────────────────────────────
+
+export interface HealthResponse {
+  status:   string;
+  supabase: boolean;
+  alpaca:   boolean;
+}
+
+export function getHealth(): Promise<HealthResponse> {
+  return client.get("/health");
+}

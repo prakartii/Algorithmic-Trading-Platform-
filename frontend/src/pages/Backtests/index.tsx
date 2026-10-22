@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { runBacktest, getBacktests } from "@/services/api";
-import { saveLastBacktest } from "@/utils/storage";
+import { saveLastBacktest, getPreferences } from "@/utils/storage";
 import type { BacktestResponse, BacktestListItem } from "@/types";
 import { Card, CardHeader } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -12,7 +12,6 @@ import { formatCurrency, formatPercent, formatNumber } from "@/utils/formatters"
 import { cn } from "@/utils/cn";
 
 const TODAY          = new Date().toISOString().slice(0, 10);
-const FIVE_YEARS_AGO = new Date(Date.now() - 5 * 365.25 * 864e5).toISOString().slice(0, 10);
 const EASE           = [0.16, 1, 0.3, 1] as const;
 
 const TH = "px-4 py-3 text-[11px] font-medium tracking-[0.07em] uppercase text-slate-500 whitespace-nowrap";
@@ -55,8 +54,11 @@ function MetricCard({ label, value, sub, color, positive }: MetricCardProps) {
 }
 
 export default function Backtests() {
+  const prefs = getPreferences();
   const [form, setForm] = useState<FormState>({
-    symbol: "AAPL", start_date: FIVE_YEARS_AGO, end_date: TODAY, initial_capital: "10000",
+    symbol: "AAPL", end_date: TODAY,
+    start_date: new Date(Date.now() - prefs.defaultYears * 365.25 * 864e5).toISOString().slice(0, 10),
+    initial_capital: String(prefs.defaultCapital),
   });
   const [running,  setRunning]  = useState(false);
   const [result,   setResult]   = useState<BacktestResponse | null>(null);
