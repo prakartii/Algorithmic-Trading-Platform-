@@ -27,6 +27,7 @@ app.include_router(paper_trading.router, prefix="/api")
 
 
 @app.get("/health")
+@app.get("/api/health")
 def health():
     return {
         "status": "ok",
