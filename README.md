@@ -525,6 +525,8 @@ VITE_API_BASE_URL=http://localhost:8000/api
 
 ## Running Locally
 
+> **Credentials are optional to boot.** Without `backend/.env` the API still serves market data and backtests; Alpaca routes return `503` with a hint, and backtest history is kept in memory. The **Settings** page shows which integrations are connected.
+
 ### Start the backend
 
 ```bash
@@ -560,6 +562,19 @@ curl "http://localhost:8000/api/portfolio"
 
 > _Add screenshots by replacing the placeholders below with actual image paths or URLs._
 
+### Pages at a glance
+
+| Page | What it does |
+|------|--------------|
+| Dashboard | Portfolio value, day P&L, allocation, positions, latest backtest |
+| Backtesting | Run the SMA 50/200 strategy, inspect metrics and equity curve |
+| Analytics | Drawdown, rolling volatility, monthly-returns heatmap, run comparison |
+| AI Insights | Rule-based alerts: concentration, cash drag, drawdown, volatility regime |
+| Paper Trading | Market/limit orders against Alpaca paper |
+| Settings | Integration status and backtest defaults |
+
+Press **Ctrl/⌘ + K** anywhere for the command palette.
+
 ### Dashboard
 ![Dashboard](docs/screenshots/dashboard.png)
 
@@ -583,10 +598,8 @@ curl "http://localhost:8000/api/portfolio"
 | Backtesting | Multi-asset portfolio backtests |
 | Backtesting | Walk-forward optimisation and Monte Carlo simulation |
 | Analytics | P&L attribution by strategy, sector, and time period |
-| Analytics | Rolling Sharpe/Sortino charts |
 | Analytics | Factor exposure decomposition (Fama-French) |
-| AI Insights | Claude-powered strategy signals and risk alerts |
-| AI Insights | Market regime classification (trending / mean-reverting / volatile) |
+| AI Insights | LLM-generated commentary on top of the current rule-based insights |
 | Paper Trading | Order book and order history from Alpaca |
 | Paper Trading | Stop-loss and take-profit order types |
 | Infrastructure | WebSocket feed for real-time position updates |
@@ -606,7 +619,7 @@ These design decisions reflect production engineering practices and are worth hi
 
 **Asset-class-aware order routing.** Alpaca silently rejects equity `time_in_force` values for crypto symbols. `AlpacaService._is_crypto()` normalises the symbol (strips `/`, uppercases) and selects `GTC` for crypto assets and `DAY` for equities before the SDK call — preventing the entire class of "invalid time_in_force" 422 errors without any client-side knowledge.
 
-**Non-blocking persistence.** Supabase inserts in the backtest and paper-trade routes are wrapped in `try/except` with a bare `pass` on failure. The HTTP response is always returned regardless of database state, so a Supabase outage cannot degrade the core trading and backtesting experience.
+**Non-blocking persistence.** Supabase inserts in the backtest and paper-trade routes never fail the request. Backtests fall back to a bounded in-memory store (`history_store.py`) when Supabase is unconfigured or down, so history keeps working in local development.
 
 **Singleton broker client.** `get_alpaca_service()` is decorated with `@lru_cache(maxsize=1)`. FastAPI's dependency injection calls it once per process and reuses the same `TradingClient` instance, avoiding repeated authentication handshakes on every request.
 
