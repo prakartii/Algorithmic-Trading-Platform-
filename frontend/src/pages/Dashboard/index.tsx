@@ -13,6 +13,11 @@ import AllocationChart from "@/components/charts/AllocationChart";
 import { formatCurrency, formatPercent, formatNumber } from "@/utils/formatters";
 import { cn } from "@/utils/cn";
 
+const EMPTY_PORTFOLIO: PortfolioResponse = {
+  portfolio_value: 0, equity: 0, cash: 0, buying_power: 0,
+  unrealized_pnl: 0, day_pnl: 0, position_count: 0, positions: [],
+};
+
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 function stagger(i: number) {
@@ -44,12 +49,12 @@ export default function Dashboard() {
   const lastBt = getLastBacktest();
 
   useEffect(() => {
-    Promise.all([getPortfolio(), getBacktests(8)])
+    Promise.allSettled([getPortfolio(), getBacktests(8)])
       .then(([p, b]) => {
-        setPortfolio(p as PortfolioResponse);
-        setHistory(b as BacktestListItem[]);
+        if (p.status === "fulfilled") setPortfolio(p.value as PortfolioResponse);
+        else setError(p.reason instanceof Error ? p.reason.message : "Could not load portfolio.");
+        if (b.status === "fulfilled") setHistory(b.value as BacktestListItem[]);
       })
-      .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -61,24 +66,7 @@ export default function Dashboard() {
     );
   }
 
-  if (error || !portfolio) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-3">
-        <div className="w-10 h-10 rounded-full bg-red-500/[0.08] border border-red-500/20 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="1.8" strokeLinecap="round">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </div>
-        <div className="text-center">
-          <p className="text-[14px] font-semibold text-slate-300">Backend unavailable</p>
-          <p className="text-[12px] text-slate-600 mt-1">{error ?? "Could not reach the API"}</p>
-          <p className="text-[11px] text-slate-700 font-mono mt-1">localhost:8000</p>
-        </div>
-      </div>
-    );
-  }
-
-  const p         = portfolio;
+  const p: PortfolioResponse = portfolio ?? EMPTY_PORTFOLIO;
   const dayPnlPct = p.equity > 0 ? (p.day_pnl / p.equity) * 100 : 0;
   const cashPct   = p.portfolio_value > 0 ? (p.cash / p.portfolio_value) * 100 : 100;
   const topBt     = history.find((b) => b.status === "completed");
@@ -91,6 +79,16 @@ export default function Dashboard() {
       transition={{ duration: 0.18 }}
       className="space-y-5"
     >
+
+      {error && (
+        <div className="flex items-start gap-3 px-4 py-3 rounded-lg bg-amber-500/[0.06] border border-amber-500/20">
+          <span className="mt-[5px] w-[6px] h-[6px] rounded-full bg-amber-400 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-[13px] font-medium text-amber-300">Live portfolio unavailable</p>
+            <p className="text-[12px] text-slate-500 mt-0.5 break-words">{error}</p>
+          </div>
+        </div>
+      )}
 
       {/* ── Stat row ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
