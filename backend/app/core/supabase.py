@@ -1,13 +1,15 @@
-from supabase import create_client
-import os
-from dotenv import load_dotenv
+import logging
 
-load_dotenv()
+from app.core.config import settings
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+logger = logging.getLogger(__name__)
 
-supabase = create_client(
-    SUPABASE_URL,
-    SUPABASE_SERVICE_KEY
-)
+supabase = None
+
+if settings.supabase_configured:
+    try:
+        from supabase import create_client
+
+        supabase = create_client(settings.supabase_url, settings.supabase_service_key)
+    except Exception as exc:  # bad URL / key must not stop the API from booting
+        logger.warning("Supabase client unavailable: %s", exc)
