@@ -56,7 +56,7 @@ const META: Record<string, { title: string; sub?: string }> = {
   "/backtests":     { title: "Backtesting",   sub: "Strategy Analysis" },
   "/paper-trading": { title: "Paper Trading", sub: "Order Management" },
   "/analytics":     { title: "Analytics",     sub: "Performance Analysis" },
-  "/ai-insights":   { title: "AI Insights",   sub: "Claude-Powered Analysis" },
+  "/ai-insights":   { title: "AI Insights",   sub: "Portfolio & Strategy Signals" },
   "/settings":      { title: "Settings",      sub: "Configuration" },
 };
 
