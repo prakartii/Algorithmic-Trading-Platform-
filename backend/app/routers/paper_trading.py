@@ -112,6 +112,8 @@ def submit_order(req: OrderRequest, svc: AlpacaSvc) -> OrderResponse:
 
     # ── persist to Supabase (non-blocking) ────────────────────────────────────
     try:
+        if supabase is None:
+            raise RuntimeError("Supabase not configured")
         supabase.table("paper_trades").insert({
             "order_id":         result.order_id,
             "client_order_id":  result.client_order_id,

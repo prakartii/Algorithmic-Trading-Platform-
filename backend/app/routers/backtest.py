@@ -7,12 +7,12 @@ import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field, field_validator, model_validator
 
-from app.core.supabase import supabase
 from app.services.backtest_engine import (
     BacktestEngine,
     InsufficientDataError,
     NoTradesGeneratedError,
 )
+from app.services.history_store import list_backtests as list_backtests_from_store, save_backtest
 from app.services.data_ingestion import DataIngestionService, TickerNotFoundError
 from app.services.risk_engine import RiskEngine
 
@@ -173,28 +173,24 @@ def run_backtest(
         equity_curve=[EquityPoint(**p) for p in result.equity_curve],
     )
 
-    # ── persist to Supabase (non-blocking: failure never breaks the response) ──
-    try:
-        supabase.table("backtests").insert({
-            "symbol":           result.symbol,
-            "start_date":       result.start_date,
-            "end_date":         result.end_date,
-            "initial_capital":  result.initial_capital,
-            "final_capital":    result.final_value,
-            "total_return_pct": result.total_return_pct,
-            "cagr_pct":         result.cagr_pct,
-            "sharpe_ratio":     result.sharpe_ratio,
-            "sortino_ratio":    risk.sortino_ratio,
-            "max_drawdown_pct": result.max_drawdown_pct,
-            "volatility_pct":   risk.volatility_pct,
-            "win_rate_pct":     risk.win_rate_pct,
-            "profit_factor":    risk.profit_factor,
-            "trade_count":      result.trade_count,
-            "equity_curve":     result.equity_curve,
-            "status":           "completed",
-        }).execute()
-    except Exception:
-        pass
+    save_backtest({
+        "symbol":           result.symbol,
+        "start_date":       result.start_date,
+        "end_date":         result.end_date,
+        "initial_capital":  result.initial_capital,
+        "final_capital":    result.final_value,
+        "total_return_pct": result.total_return_pct,
+        "cagr_pct":         result.cagr_pct,
+        "sharpe_ratio":     result.sharpe_ratio,
+        "sortino_ratio":    risk.sortino_ratio,
+        "max_drawdown_pct": result.max_drawdown_pct,
+        "volatility_pct":   risk.volatility_pct,
+        "win_rate_pct":     risk.win_rate_pct,
+        "profit_factor":    risk.profit_factor,
+        "trade_count":      result.trade_count,
+        "equity_curve":     result.equity_curve,
+        "status":           "completed",
+    })
 
     return response
 
@@ -208,27 +204,4 @@ def list_backtests(
     limit: int = Query(default=20, ge=1, le=100, description="Max results to return"),
     symbol: str | None = Query(default=None, description="Filter by ticker symbol"),
 ) -> list[BacktestListItem]:
-    try:
-        query = (
-            supabase.table("backtests")
-            .select(
-                "id, symbol, start_date, end_date, initial_capital, "
-                "final_capital, total_return_pct, sharpe_ratio, "
-                "max_drawdown_pct, trade_count, status, created_at"
-            )
-            .eq("status", "completed")
-            .order("created_at", desc=True)
-            .limit(limit)
-        )
-
-        if symbol:
-            query = query.eq("symbol", symbol.upper())
-
-        result = query.execute()
-        return result.data or []
-
-    except Exception as exc:
-        raise HTTPException(
-            status_code=502,
-            detail=f"Failed to retrieve backtest history: {exc}",
-        ) from exc
+    return list_backtests_from_store(limit, symbol)
