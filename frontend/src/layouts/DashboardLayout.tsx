@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import TopBar  from "./TopBar";
@@ -6,6 +6,13 @@ import TopBar  from "./TopBar";
 export default function DashboardLayout() {
   const [collapsed,  setCollapsed]  = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMobileOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#0b0c0d] text-slate-100 antialiased">
