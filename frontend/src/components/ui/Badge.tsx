@@ -3,6 +3,7 @@ import { cn } from "@/utils/cn";
 interface BadgeProps {
   label:    string;
   variant?: "default" | "success" | "warning" | "danger" | "blue";
+  dot?:     boolean;
 }
 
 const V: Record<NonNullable<BadgeProps["variant"]>, string> = {
@@ -13,13 +14,14 @@ const V: Record<NonNullable<BadgeProps["variant"]>, string> = {
   blue:    "text-blue-400   bg-blue-500/[0.10]    border-blue-500/25",
 };
 
-export default function Badge({ label, variant = "default" }: BadgeProps) {
+export default function Badge({ label, variant = "default", dot = false }: BadgeProps) {
   return (
     <span className={cn(
       "inline-flex items-center px-1.5 py-[2px] rounded",
       "text-[10px] font-medium tracking-[0.05em] uppercase border select-none",
       V[variant],
     )}>
+      {dot && <span className="w-1 h-1 rounded-full bg-current mr-1.5" />}
       {label}
     </span>
   );
