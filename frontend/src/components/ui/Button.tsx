@@ -27,6 +27,7 @@ export default function Button({
   return (
     <button
       disabled={disabled || loading}
+      aria-busy={loading || undefined}
       className={cn(
         "inline-flex items-center justify-center gap-1.5 rounded-md font-medium border",
         "transition-all duration-100 select-none active:scale-[0.98]",
