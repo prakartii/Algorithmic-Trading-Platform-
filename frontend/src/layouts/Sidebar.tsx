@@ -67,7 +67,7 @@ function NavItem({
           "relative flex items-center gap-2.5 px-2.5 py-[6px] rounded-md",
           "text-[13px] font-medium transition-colors duration-100 cursor-pointer select-none",
           isActive
-            ? "bg-white/[0.07] text-slate-100"
+            ? "bg-white/[0.07] text-slate-100 before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-[2px] before:rounded-full before:bg-blue-400"
             : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]",
           collapsed && "justify-center px-0",
         )}>
