@@ -1,4 +1,5 @@
 import { cn } from "@/utils/cn";
+import Skeleton from "./Skeleton";
 
 function TrendUp() {
   return (
@@ -44,10 +45,10 @@ export default function StatCard({
       className,
     )}>
       {loading ? (
-        <div className="space-y-3 animate-pulse">
-          <div className="h-2.5 w-20 bg-white/[0.06] rounded" />
-          <div className="h-8 w-28 bg-white/[0.06] rounded" />
-          <div className="h-2.5 w-16 bg-white/[0.06] rounded" />
+        <div className="space-y-3">
+          <Skeleton className="h-2.5 w-20" />
+          <Skeleton className="h-8 w-28" />
+          <Skeleton className="h-2.5 w-16" />
         </div>
       ) : (
         <>
