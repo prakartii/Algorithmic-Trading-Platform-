@@ -207,6 +207,7 @@ export default function Sidebar({ collapsed, mobileOpen, onCollapse, onMobileClo
 
         <button
           onClick={onCollapse}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           className={cn(
             "hidden lg:flex w-full items-center mx-2 px-2.5 py-[7px] rounded-lg",
             "text-slate-600 hover:text-slate-300 hover:bg-white/[0.05] transition-colors",
