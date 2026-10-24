@@ -99,7 +99,7 @@ function GroupLabel({ label, collapsed }: { label: string; collapsed: boolean })
   if (collapsed) return <div className="h-3" />;
   return (
     <div className="px-4 pt-5 pb-1">
-      <span className="text-[11px] font-medium text-slate-600 select-none">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-600 select-none">
         {label}
       </span>
     </div>
