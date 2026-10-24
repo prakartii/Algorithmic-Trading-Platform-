@@ -87,7 +87,7 @@ export default function TopBar({ onMobileMenuClick }: TopBarProps) {
   const cfg   = STATUS_CONFIG[status];
 
   return (
-    <header className="h-[52px] shrink-0 flex items-center gap-3 px-4 bg-canvas border-b border-white/[0.06] select-none">
+    <header className="h-[52px] shrink-0 flex items-center gap-3 px-4 bg-canvas/80 backdrop-blur-md border-b border-white/[0.06] select-none">
 
       <button
         onClick={onMobileMenuClick}
