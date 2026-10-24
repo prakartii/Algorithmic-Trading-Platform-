@@ -29,7 +29,7 @@ export default function Button({
       disabled={disabled || loading}
       className={cn(
         "inline-flex items-center justify-center gap-1.5 rounded-md font-medium border",
-        "transition-all duration-100 select-none",
+        "transition-all duration-100 select-none active:scale-[0.98]",
         "disabled:opacity-40 disabled:cursor-not-allowed",
         V[variant], S[size], className,
       )}
