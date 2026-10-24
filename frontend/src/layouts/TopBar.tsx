@@ -91,6 +91,7 @@ export default function TopBar({ onMobileMenuClick }: TopBarProps) {
 
       <button
         onClick={onMobileMenuClick}
+        aria-label="Open navigation menu"
         className="lg:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-200 hover:bg-white/[0.06] transition-colors"
       >
         <IconMenu />
@@ -140,7 +141,7 @@ export default function TopBar({ onMobileMenuClick }: TopBarProps) {
       <div className="h-4 w-px bg-white/[0.08]" />
 
       {/* Notifications */}
-      <button className="relative p-1.5 rounded-md text-slate-600 hover:text-slate-300 hover:bg-white/[0.06] transition-colors">
+      <button aria-label="Notifications" className="relative p-1.5 rounded-md text-slate-600 hover:text-slate-300 hover:bg-white/[0.06] transition-colors">
         <IconBell />
         <span className="absolute top-[5px] right-[5px] w-[5px] h-[5px] rounded-full bg-blue-500 ring-1 ring-[#08090a]" />
       </button>
