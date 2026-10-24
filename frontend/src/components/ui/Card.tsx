@@ -18,7 +18,7 @@ export function Card({ title, children, className, ...props }: CardProps) {
     >
       {title && (
         <div className="px-5 py-4 border-b border-white/[0.06]">
-          <h3 className="text-[14px] font-semibold text-slate-200">{title}</h3>
+          <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-slate-200 truncate">{title}</h3>
         </div>
       )}
       {children}
