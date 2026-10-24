@@ -63,7 +63,7 @@ function NavItem({
   return (
     <NavLink to={to} end={end} className="block px-2">
       {({ isActive }) => (
-        <div className={cn(
+        <div title={collapsed ? label : undefined} className={cn(
           "relative flex items-center gap-2.5 px-2.5 py-[6px] rounded-md",
           "text-[13px] font-medium transition-colors duration-100 cursor-pointer select-none",
           isActive
