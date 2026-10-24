@@ -11,7 +11,7 @@ export function Card({ title, children, className, ...props }: CardProps) {
       className={cn(
         "bg-[#0f1012] border border-white/[0.06] rounded-lg overflow-hidden",
         "shadow-[0_1px_0_0_rgba(255,255,255,0.02)_inset]",
-        "transition-colors duration-150 hover:border-white/[0.09]",
+        "transition-[border-color,box-shadow] duration-150 hover:border-white/[0.09] hover:shadow-[0_4px_20px_rgba(0,0,0,0.25)]",
         className,
       )}
       {...props}
