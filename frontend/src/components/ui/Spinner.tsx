@@ -1,10 +1,11 @@
 import { cn } from "@/utils/cn";
 
 interface SpinnerProps {
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
 }
 
 const SIZES = {
+  xs: "w-3 h-3 border-[1.5px]",
   sm: "w-4 h-4 border-[1.5px]",
   md: "w-6 h-6 border-2",
   lg: "w-8 h-8 border-2",
